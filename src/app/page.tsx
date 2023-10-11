@@ -38,7 +38,7 @@ export default function Dashboard({ params }: any) {
 
   const fetcher = (...args: Parameters<typeof fetch>) =>
     fetch(...args).then((res) => res.json());
-  let apiUrl = `http://localhost:3000/api/finances?username=${username}`;
+  let apiUrl = `/api/finances?username=${username}`;
 
   if (year && year !== "") {
     apiUrl += `&year=${year}`;
@@ -137,28 +137,19 @@ export default function Dashboard({ params }: any) {
           <table className="w-full h-full text-sm text-left text-gray-400">
             <thead className="text-xs uppercase text-gray-400">
               <tr>
-                <th
-                  scope="col"
-                  className="px-6 py-3 w-[28%] bg-gray-800/50"
-                >
+                <th scope="col" className="px-6 py-3 w-[28%] bg-gray-800/50">
                   Titulo
                 </th>
                 <th scope="col" className="px-6 py-3 w-12 dark:bg-gray-900/20">
                   Tipo
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 bg-gray-800/50"
-                >
+                <th scope="col" className="px-6 py-3 bg-gray-800/50">
                   Data
                 </th>
                 <th scope="col" className="px-6 py-3 dark:bg-gray-900/20">
                   Categoria
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3  bg-gray-800/50  w-[18%]"
-                >
+                <th scope="col" className="px-6 py-3  bg-gray-800/50  w-[18%]">
                   Valor
                 </th>
                 <th scope="col" className="px-1 py-3 w-[6%]">
@@ -189,10 +180,7 @@ export default function Dashboard({ params }: any) {
                   }
                 })
                 .map((teste: IFinance) => (
-                  <tr
-                    key={teste._id}
-                    className="border-b border-gray-700"
-                  >
+                  <tr key={teste._id} className="border-b border-gray-700">
                     <th
                       scope="row"
                       className="px-6 py-4 font-medium whitespace-nowrap text-white bg-gray-800/40"
