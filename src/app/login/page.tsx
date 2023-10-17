@@ -2,6 +2,7 @@
 import { getProviders, signIn, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Spinner from "@/components/Spinner";
 
 const Login = ({ url }: any) => {
   const session = useSession();
@@ -18,7 +19,7 @@ const Login = ({ url }: any) => {
   };
 
   if (session.status === "loading") {
-    return <p>Loading...</p>;
+    return <Spinner />;
   }
 
   if (session.status === "authenticated") {

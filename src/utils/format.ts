@@ -10,7 +10,7 @@ export function converterDataParaDDMMYY(data: string): string {
     const ano = partes[0].substring(2); // Pega os dois últimos dígitos do ano
     const mes = partes[1];
     const dia = partes[2];
-    return `${dia}/${mes}/${ano}`;
+    return `${dia}/${mes}`;
   } else {
     throw new Error("Formato de data inválido. Use o formato AAAA-MM-DD.");
   }

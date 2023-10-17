@@ -32,7 +32,6 @@ export default function Dashboard({ params }: any) {
     setIsOpen,
   } = useFinance();
   const session = useSession();
-  console.log(session);
 
   const username = session.data?.user?.name;
 
@@ -55,7 +54,6 @@ export default function Dashboard({ params }: any) {
   const { data, mutate, error, isLoading } = useSWR(apiUrl, fetcher);
 
   const router = useRouter();
-  console.log(data);
 
   const handleSubmit = async (data: Partial<IFinance>) => {
     setLoading(true);
@@ -132,116 +130,102 @@ export default function Dashboard({ params }: any) {
   }
   if (session.status === "authenticated") {
     return (
-      <div onClick={() => setIsOpen(false)} className="page-container h-[93%]">
-        <div className="w-full h-full relative shadow-md shadow-gray-900/20 rounded-bl-lg lg:rounded-l-lg overflow-y-auto">
-          <table className="w-full h-full text-sm text-left text-gray-400">
-            <thead className="text-xs uppercase text-gray-400">
-              <tr>
-                <th scope="col" className="px-6 py-3 w-[28%] bg-gray-800/50">
-                  Titulo
-                </th>
-                <th scope="col" className="px-6 py-3 w-12 dark:bg-gray-900/20">
-                  Tipo
-                </th>
-                <th scope="col" className="px-6 py-3 bg-gray-800/50">
-                  Data
-                </th>
-                <th scope="col" className="px-6 py-3 dark:bg-gray-900/20">
-                  Categoria
-                </th>
-                <th scope="col" className="px-6 py-3  bg-gray-800/50  w-[18%]">
-                  Valor
-                </th>
-                <th scope="col" className="px-1 py-3 w-[6%]">
-                  Editar
-                </th>
-              </tr>
-            </thead>
-            <tbody className="">
-              {data
-                ?.filter((finance: IFinance) =>
-                  finance.category
-                    .toLowerCase()
-                    .includes(category.toLowerCase())
-                )
-                .filter(
-                  (finance: IFinance) => tipo === null || finance.tipo === tipo
-                )
-                .sort((a: IFinance, b: IFinance) => {
-                  if (ordenacao === "valorCrescente") {
-                    // Ordene pelo valor de forma crescente
-                    return a.value - b.value;
-                  } else if (ordenacao === "valorDecrescente") {
-                    // Ordene pelo valor de forma decrescente
-                    return b.value - a.value;
-                  } else {
-                    // Por padrão, ordene pela data de forma crescente
-                    return a.date.localeCompare(b.date);
-                  }
-                })
-                .map((teste: IFinance) => (
-                  <tr key={teste._id} className="border-b border-gray-700">
-                    <th
-                      scope="row"
-                      className="px-6 py-4 font-medium whitespace-nowrap text-white bg-gray-800/40"
-                    >
-                      {teste.title.length > 27
-                        ? teste.title.substring(0, 27) + "..."
-                        : teste.title}
-                    </th>
-                    <td className="px-6 py-4 justify-center">
-                      {teste.tipo ? (
-                        <div className="flex justify-center w-full font-bold text-xl text-green-600">
-                          <BsGraphUpArrow />
-                        </div>
-                      ) : (
-                        <div className="flex justify-center w-full font-bold text-xl text-red-600">
-                          <BsGraphDownArrow />
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 bg-gray-800/40">
-                      {converterDataParaDDMMYY(teste.date)}
-                    </td>
-                    <td className="px-6 py-4">{teste.category}</td>
-                    <td className="px-6 py-4 bg-gray-800/40">
-                      R$ {numberToString(teste.value)}
-                    </td>
-                    <td className="py-4 ">
-                      <div className="flex justify-center w-full font-bold text-xl gap-1">
-                        <button
-                          className=" hover:text-indigo-600"
-                          onClick={() => setFinance(teste)}
-                        >
-                          <AiFillEdit />
-                        </button>
-                        <button
-                          className=" hover:text-red-600"
-                          onClick={() => handleDelete(teste._id)}
-                        >
-                          <AiFillDelete />
-                        </button>
+      <div
+        onClick={() => setIsOpen(false)}
+        className="page-container  overflow-x-hidden overflow-y-auto"
+      >
+        <div className="flex flex-col w-full h-full shadow-md shadow-gray-900/20 rounded-bl-lg ">
+          <div className="flex text-xs uppercase text-gray-400">
+            <div className="item-data w-full bg-gray-800/50 rounded-tl-lg">
+              Titulo
+            </div>
+            <div className="item-data dark:bg-gray-900/20 w-20">Tipo</div>
+            <div className="hidden lg:block item-data w-32 bg-gray-800/50">
+              Data
+            </div>
+            <div className="item-data hidden lg:block  w-56 dark:bg-gray-900/20">
+              Categoria
+            </div>
+            <div className="item-data bg-gray-800/50 w-64">Valor</div>
+            <div className="item-data  w-24">Editar</div>
+          </div>
+          <div className="flex flex-col">
+            {data
+              ?.filter((finance: IFinance) =>
+                finance.category.toLowerCase().includes(category.toLowerCase())
+              )
+              .filter(
+                (finance: IFinance) => tipo === null || finance.tipo === tipo
+              )
+              .sort((a: IFinance, b: IFinance) => {
+                if (ordenacao === "valorCrescente") {
+                  return a.value - b.value;
+                } else if (ordenacao === "valorDecrescente") {
+                  return b.value - a.value;
+                } else {
+                  return a.date.localeCompare(b.date);
+                }
+              })
+              .map((teste: IFinance) => (
+                <div key={teste._id} className="border-b flex  border-gray-700">
+                  <div className="item-data w-full font-medium whitespace-nowrap text-white bg-gray-800/40">
+                    {teste.title.length > 27
+                      ? teste.title.substring(0, 27) + "..."
+                      : teste.title}
+                  </div>
+                  <div className="item-data w-20">
+                    {teste.tipo ? (
+                      <div className="flex pl-1 w-full font-bold text-xl text-green-600">
+                        <BsGraphUpArrow />
                       </div>
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-            <tfoot className="h-full rounded-md">
-              <tr className="font-semibold text-gray-900 dark:text-white">
-                <th className="px-6 py-3 bg-gray-800/40"></th>
-                <td className="px-6 py-3"></td>
-                <td className="px-6 py-3 bg-gray-800/40"></td>
-                <td className="px-6 py-3"></td>
-                <td className="px-6 py-3 bg-gray-800/40"></td>
-              </tr>
-            </tfoot>
-          </table>
+                    ) : (
+                      <div className="flex pl-1 w-full font-bold text-xl text-red-600">
+                        <BsGraphDownArrow />
+                      </div>
+                    )}
+                  </div>
+                  <div className="hidden w-32 lg:block item-data bg-gray-800/40">
+                    {converterDataParaDDMMYY(teste.date)}
+                  </div>
+                  <div className="item-data hidden w-56 lg:block">
+                    {teste.category}
+                  </div>
+                  <div className="item-data bg-gray-800/40 w-64">
+                    R$ {numberToString(teste.value)}
+                  </div>
+
+                  <div className="item-data w-24  font-bold text-xl gap-1">
+                    <button
+                      className=" hover:text-indigo-600"
+                      onClick={() => setFinance(teste)}
+                    >
+                      <AiFillEdit />
+                    </button>
+                    <button
+                      className=" hover:text-red-600"
+                      onClick={() => handleDelete(teste._id)}
+                    >
+                      <AiFillDelete />
+                    </button>
+                  </div>
+                </div>
+              ))}
+          </div>
+          <div className="flex h-full">
+            <div className="item-data h-full w-full bg-gray-800/40 rounded-bl-lg"></div>
+            <div className="item-data h-full w-20"></div>
+            <div className="item-data hidden lg:block h-full w-32 bg-gray-800/40"></div>
+            <div className="item-data hidden lg:block h-full w-56 "></div>
+            <div className="item-data h-full w-64 bg-gray-800/40"></div>
+            <div className="item-data h-full w-24 text-gray-200/0">-</div>
+          </div>
         </div>
-        <div className="flex flex-row lg:flex-col h-[300px] lg:h-[100%] gap-2 w-full lg:w-1/3">
+
+        <div className="flex flex-row lg:flex-col lg:h-full gap-2 w-full lg:w-1/3">
           {" "}
           <div
             onClick={() => setFinance(null)}
-            className="flex text-xs justify-start p-2 pt-3 gap-1 items-center flex-col w-[31%] lg:w-full bg-gray-800/40 shadow-md shadow-gray-900/20 rounded-tl-lg lg:rounded-tl-none  lg:rounded-tr-lg"
+            className="hidden lg:flex text-xs justify-start p-2 pt-3 gap-1 items-center flex-col w-[31%] lg:w-full bg-gray-800/40 shadow-md shadow-gray-900/20 rounded-tl-lg lg:rounded-tl-none  lg:rounded-tr-lg"
           >
             <p className="font-semibold">ORDEM / FILTRO</p>
             <div className="flex w-full gap-1 my-0.5">
@@ -267,13 +251,6 @@ export default function Dashboard({ params }: any) {
             <div className="flex w-full gap-1">
               <select
                 className="input"
-                value={year}
-                onChange={(e) => setYear(e.target.value)}
-              >
-                <option value="2023">2023</option>
-              </select>
-              <select
-                className="input"
                 value={month}
                 onChange={(e) => setMonth(e.target.value)}
               >
@@ -290,6 +267,13 @@ export default function Dashboard({ params }: any) {
                 <option value="10">Outubro</option>
                 <option value="11">Novembro</option>
                 <option value="12">Dezembro</option>
+              </select>
+              <select
+                className="input"
+                value={year}
+                onChange={(e) => setYear(e.target.value)}
+              >
+                <option value="2023">2023</option>
               </select>
             </div>
             <div className="flex w-full gap-1 my-0.5">
@@ -334,7 +318,7 @@ export default function Dashboard({ params }: any) {
               </select>
             </div>
           </div>
-          <div className="flex w-6/12 lg:w-full">
+          <div className="flex w-full">
             {finance ? (
               <FinanceForm
                 formSubmit={handleUpdate}
@@ -345,17 +329,45 @@ export default function Dashboard({ params }: any) {
               <FinanceForm formSubmit={handleSubmit} nameButton="Adicionar" />
             )}
           </div>
-          <div className="flex flex-col w-[30%] lg:h-full lg:w-full">
-            <div className="flex justify-between p-4 items-center w-full h-1/3 bg-gray-800/40 shadow-md shadow-gray-900/20 rounded-tr-lg lg:rounded-none">
+          <div className="flex flex-col gap-1 w-[448px] lg:h-full lg:w-full">
+            <div className="flex w-full gap-1 px-0.5 lg:hidden">
+              <select
+                className="input"
+                value={month}
+                onChange={(e) => setMonth(e.target.value)}
+              >
+                <option value="">Nenhum</option>
+                <option value="01">Janeiro</option>
+                <option value="02">Fevereiro</option>
+                <option value="03">Março</option>
+                <option value="04">Abril</option>
+                <option value="05">Maio</option>
+                <option value="06">Junho</option>
+                <option value="07">Julho</option>
+                <option value="08">Agosto</option>
+                <option value="09">Setembro</option>
+                <option value="10">Outubro</option>
+                <option value="11">Novembro</option>
+                <option value="12">Dezembro</option>
+              </select>
+              <select
+                className="input"
+                value={year}
+                onChange={(e) => setYear(e.target.value)}
+              >
+                <option value="2023">2023</option>
+              </select>
+            </div>
+            <div className="flex justify-between px-4  items-center w-full h-1/3 bg-gray-800/40 shadow-md shadow-gray-900/20 rounded-tr-lg lg:rounded-none">
               <h1>Rec:</h1>
               <h1>R$ {numberToString(totalEntradas)}</h1>
             </div>
 
-            <div className="flex justify-between p-4 items-center w-full h-1/3 shadow-md">
+            <div className="flex justify-between px-4 items-center w-full h-1/3 shadow-md">
               <h1>Des:</h1>
               <h1>R$ {numberToString(totalSaidas)}</h1>
             </div>
-            <div className="flex justify-between p-4 items-center w-full h-1/3 bg-gray-800/40 shadow-md shadow-gray-900/20 lg:rounded-br-lg">
+            <div className="flex justify-between px-4 items-center w-full h-1/3 bg-gray-800/40 shadow-md shadow-gray-900/20 lg:rounded-br-lg">
               <h1>Sal:</h1>
               <h1>R$ {numberToString(totalEntradas - totalSaidas)}</h1>
             </div>
