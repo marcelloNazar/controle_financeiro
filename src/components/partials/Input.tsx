@@ -9,7 +9,7 @@ type InputProps = InputHTMLAttributes<HTMLInputElement> & {
 const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ type = "text", name = "", error = "", ...props }, ref) => {
     return (
-      <div className="flex flex-col w-full px-1">
+      <div className="flex flex-col w-full">
         <input className="input" type={type} name={name} ref={ref} {...props} />
         {error && (
           <p className="text-xs pl-1 text-red-600 dark:text-red-600">{error}</p>

@@ -23,7 +23,7 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ tipo, register }) => {
           id="toggle-switch"
           {...register("tipo")} // Use o registro diretamente aqui
           defaultChecked={tipo} // Defina o estado inicial com base em 'tipo'
-          className="cursor-pointer h-8 w-16 rounded-full appearance-none bg-white bg-opacity-5 border-2 border-red-600 checked:border-green-600 checked:bg-gray-600 transition duration-200 relative"
+          className="cursor-pointer h-8 w-16 rounded-full appearance-none bg-white bg-opacity-5 shadow-[0_0_7px_red] hover:shadow-[0_0_11px_red] checked:shadow-[0_0_7px_green] checked:hover:hover:shadow-[0_0_11px_green] checked:bg-gray-800/40 transition duration-200 relative"
         />
       </label>
 

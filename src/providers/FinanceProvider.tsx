@@ -9,6 +9,10 @@ interface FinanceContextType {
   setLoading: (isLoading: boolean) => void;
   isOpen: boolean;
   setIsOpen: (isLoading: boolean) => void;
+  addModalIsOpen: boolean;
+  setAddModalIsOpen: (isLoading: boolean) => void;
+  updateModalIsOpen: boolean;
+  setUpdateModalIsOpen: (isLoading: boolean) => void;
   year: string;
   setYear: (year: string) => void;
   month: string;
@@ -34,24 +38,30 @@ export const FinanceContext = createContext<FinanceContextType>({
   setLoading: () => {},
   isOpen: false,
   setIsOpen: () => {},
-  year: "", // Valor inicial do estado year
-  setYear: () => {}, // Função para atualizar year
-  month: "", // Valor inicial do estado month
-  setMonth: () => {}, // Função para atualizar month
-  day: "", // Valor inicial do estado day
-  setDay: () => {}, // Função para atualizar day
-  category: "", // Valor inicial do estado day
-  setCategory: () => {}, // Função para atualizar day
-  ordenacao: "", // Valor inicial do estado day
-  setOrdenacao: () => {}, // Função para atualizar day
-  tipo: false, // Valor inicial do estado day
-  setTipo: () => {}, // Função para atualizar day
+  addModalIsOpen: false,
+  setAddModalIsOpen: () => {},
+  updateModalIsOpen: false,
+  setUpdateModalIsOpen: () => {},
+  year: "",
+  setYear: () => {},
+  month: "",
+  setMonth: () => {},
+  day: "",
+  setDay: () => {},
+  category: "",
+  setCategory: () => {},
+  ordenacao: "",
+  setOrdenacao: () => {},
+  tipo: false,
+  setTipo: () => {},
 });
 
 export const FinanceProvider: React.FC<Props> = ({ children }) => {
   const [finance, setFinance] = useState<IFinance | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [addModalIsOpen, setAddModalIsOpen] = useState(false);
+  const [updateModalIsOpen, setUpdateModalIsOpen] = useState(false);
 
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear().toString();
@@ -73,6 +83,10 @@ export const FinanceProvider: React.FC<Props> = ({ children }) => {
         setLoading,
         isOpen,
         setIsOpen,
+        addModalIsOpen,
+        setAddModalIsOpen,
+        updateModalIsOpen,
+        setUpdateModalIsOpen,
         year,
         setYear,
         month,

@@ -4,32 +4,32 @@ import { useSession } from "next-auth/react";
 import { IFinance } from "@/interfaces/Post";
 import { useRouter } from "next/navigation";
 import FinanceForm from "@/components/forms/FinanceForm";
-import Spinner from "@/components/Spinner";
-import { BsGraphDownArrow, BsGraphUpArrow, BsListUl } from "react-icons/bs";
-import { AiFillDelete, AiFillEdit } from "react-icons/ai";
+import Spinner from "@/components/partials/Spinner";
 import { useFinance } from "@/providers/FinanceProvider";
-import { numberToString, converterDataParaDDMMYY } from "@/utils/format";
+import FilterPanel from "@/components/FilterPanel";
+import FinanceList from "@/components/FinanceList";
+import FinanceSummary from "@/components/FinaceSummary";
+import Button from "@/components/partials/Button";
+import Modal from "@/components/partials/Modal";
 
 export default function Dashboard({ params }: any) {
   const {
     finance,
     setFinance,
-    loading,
     setLoading,
     year,
     setYear,
     month,
     setMonth,
     day,
-    setDay,
-    category,
     setCategory,
-    tipo,
     setTipo,
-    ordenacao,
     setOrdenacao,
-    isOpen,
     setIsOpen,
+    addModalIsOpen,
+    setAddModalIsOpen,
+    updateModalIsOpen,
+    setUpdateModalIsOpen,
   } = useFinance();
   const session = useSession();
 
@@ -70,6 +70,7 @@ export default function Dashboard({ params }: any) {
         }),
       });
       setLoading(false);
+      setAddModalIsOpen(false)
       mutate();
     } catch (err) {
       console.log(err);
@@ -91,6 +92,7 @@ export default function Dashboard({ params }: any) {
         }),
       });
       setLoading(false);
+      setUpdateModalIsOpen(false)
       mutate();
     } catch {
       console.log(error);
@@ -114,10 +116,8 @@ export default function Dashboard({ params }: any) {
 
   data?.forEach((teste: IFinance) => {
     if (teste.tipo) {
-      // Se for uma entrada (teste.tipo === true), adicione ao total de entradas
       totalEntradas += teste.value;
     } else {
-      // Se for uma saída (teste.tipo === false), adicione ao total de saídas
       totalSaidas += teste.value;
     }
   });
@@ -132,9 +132,9 @@ export default function Dashboard({ params }: any) {
     return (
       <div
         onClick={() => setIsOpen(false)}
-        className="page-container  overflow-x-hidden overflow-y-auto"
+        className="page-container  overflow-x-hidden overflow-y-auto py-2"
       >
-        <div className="flex flex-col w-full h-full shadow-md shadow-gray-900/20 rounded-bl-lg ">
+        <div className="flex flex-col w-full h-full shadow-md shadow-gray-700/20 rounded-bl-lg">
           <div className="flex text-xs uppercase text-gray-400">
             <div className="item-data w-full bg-gray-800/50 rounded-tl-lg">
               Titulo
@@ -149,68 +149,11 @@ export default function Dashboard({ params }: any) {
             <div className="item-data bg-gray-800/50 w-64">Valor</div>
             <div className="item-data  w-24">Editar</div>
           </div>
-          <div className="flex flex-col">
-            {data
-              ?.filter((finance: IFinance) =>
-                finance.category.toLowerCase().includes(category.toLowerCase())
-              )
-              .filter(
-                (finance: IFinance) => tipo === null || finance.tipo === tipo
-              )
-              .sort((a: IFinance, b: IFinance) => {
-                if (ordenacao === "valorCrescente") {
-                  return a.value - b.value;
-                } else if (ordenacao === "valorDecrescente") {
-                  return b.value - a.value;
-                } else {
-                  return a.date.localeCompare(b.date);
-                }
-              })
-              .map((teste: IFinance) => (
-                <div key={teste._id} className="border-b flex  border-gray-700">
-                  <div className="item-data w-full font-medium whitespace-nowrap text-white bg-gray-800/40">
-                    {teste.title.length > 27
-                      ? teste.title.substring(0, 27) + "..."
-                      : teste.title}
-                  </div>
-                  <div className="item-data w-20">
-                    {teste.tipo ? (
-                      <div className="flex pl-1 w-full font-bold text-xl text-green-600">
-                        <BsGraphUpArrow />
-                      </div>
-                    ) : (
-                      <div className="flex pl-1 w-full font-bold text-xl text-red-600">
-                        <BsGraphDownArrow />
-                      </div>
-                    )}
-                  </div>
-                  <div className="hidden w-32 lg:block item-data bg-gray-800/40">
-                    {converterDataParaDDMMYY(teste.date)}
-                  </div>
-                  <div className="item-data hidden w-56 lg:block">
-                    {teste.category}
-                  </div>
-                  <div className="item-data bg-gray-800/40 w-64">
-                    R$ {numberToString(teste.value)}
-                  </div>
-
-                  <div className="item-data w-24  font-bold text-xl gap-1">
-                    <button
-                      className=" hover:text-indigo-600"
-                      onClick={() => setFinance(teste)}
-                    >
-                      <AiFillEdit />
-                    </button>
-                    <button
-                      className=" hover:text-red-600"
-                      onClick={() => handleDelete(teste._id)}
-                    >
-                      <AiFillDelete />
-                    </button>
-                  </div>
-                </div>
-              ))}
-          </div>
+          <FinanceList
+            data={data}
+            setFinance={setFinance}
+            handleDelete={handleDelete}
+          />
           <div className="flex h-full">
             <div className="item-data h-full w-full bg-gray-800/40 rounded-bl-lg"></div>
             <div className="item-data h-full w-20"></div>
@@ -221,158 +164,51 @@ export default function Dashboard({ params }: any) {
           </div>
         </div>
 
-        <div className="flex flex-row lg:flex-col lg:h-full gap-2 w-full lg:w-1/3">
+        <div className="flex flex-row-reverse h-72 gap-2 w-full lg:flex-col lg:h-full lg:w-96">
           {" "}
-          <div
-            onClick={() => setFinance(null)}
-            className="hidden lg:flex text-xs justify-start p-2 pt-3 gap-1 items-center flex-col w-[31%] lg:w-full bg-gray-800/40 shadow-md shadow-gray-900/20 rounded-tl-lg lg:rounded-tl-none  lg:rounded-tr-lg"
-          >
-            <p className="font-semibold">ORDEM / FILTRO</p>
-            <div className="flex w-full gap-1 my-0.5">
-              <button
-                className="black-button flex items-center justify-center "
-                onClick={() => setOrdenacao("valorDecrescente")}
-              >
-                Decr.
-              </button>
-              <button
-                className="black-button flex items-center justify-center "
-                onClick={() => setOrdenacao("valorCrescente")}
-              >
-                Cresc.
-              </button>
-              <button
-                className="black-button flex  items-center justify-center ordenacao === 'dataCrescente' ? 'dark:bg-blue-600 text-white' : ''"
-                onClick={() => setOrdenacao("dataCrescente")}
-              >
-                Data
-              </button>
-            </div>
-            <div className="flex w-full gap-1">
-              <select
-                className="input"
-                value={month}
-                onChange={(e) => setMonth(e.target.value)}
-              >
-                <option value="">Nenhum</option>
-                <option value="01">Janeiro</option>
-                <option value="02">Fevereiro</option>
-                <option value="03">Março</option>
-                <option value="04">Abril</option>
-                <option value="05">Maio</option>
-                <option value="06">Junho</option>
-                <option value="07">Julho</option>
-                <option value="08">Agosto</option>
-                <option value="09">Setembro</option>
-                <option value="10">Outubro</option>
-                <option value="11">Novembro</option>
-                <option value="12">Dezembro</option>
-              </select>
-              <select
-                className="input"
-                value={year}
-                onChange={(e) => setYear(e.target.value)}
-              >
-                <option value="2023">2023</option>
-              </select>
-            </div>
-            <div className="flex w-full gap-1 my-0.5">
-              <button
-                className="black-button flex text-blue-600 items-center justify-center text-xl font-extrabold"
-                onClick={() => setTipo(null)}
-              >
-                <BsListUl />
-              </button>
-              <button
-                className="black-button flex text-green-600 items-center justify-center text-xl font-extrabold"
-                onClick={() => setTipo(true)}
-              >
-                <BsGraphUpArrow />
-              </button>
-              <button
-                className="black-button flex text-red-600 items-center justify-center text-xl font-extrabold"
-                onClick={() => setTipo(false)}
-              >
-                <BsGraphDownArrow />
-              </button>
-            </div>
-            <div className="w-full">
-              <select
-                className="input"
-                onChange={(e) => setCategory(e.target.value)}
-              >
-                <option value="" className="dark:text-gray-600">
-                  Categoria
-                </option>
-
-                <>
-                  <option value="Salario">Salario</option>
-                  <option value="Freelancer">Freelancer</option>
-                </>
-
-                <>
-                  {" "}
-                  <option value="Alimentação">Alimentação</option>
-                  <option value="Gasolina">Gasolina</option>
-                </>
-              </select>
-            </div>
+          <FilterPanel
+            setOrdenacao={setOrdenacao}
+            setMonth={setMonth}
+            setYear={setYear}
+            setTipo={setTipo}
+            setCategory={setCategory}
+            setFinance={setFinance}
+          />
+          <div className="hidden lg:flex w-full">
+            <FinanceForm formSubmit={handleSubmit} nameButton="Adicionar" />
           </div>
-          <div className="flex w-full">
-            {finance ? (
-              <FinanceForm
-                formSubmit={handleUpdate}
-                data={finance}
-                nameButton="Editar"
+          <div className="flex flex-col w-full h-full gap-2 pb-2 lg:pb-0">
+            <FinanceSummary
+              totalEntradas={totalEntradas}
+              totalSaidas={totalSaidas}
+            />
+            <div className="flex w-full lg:hidden">
+              <Button
+                onClick={() => setAddModalIsOpen(true)}
+                text="Adicionar"
+                isLoading={isLoading}
               />
-            ) : (
-              <FinanceForm formSubmit={handleSubmit} nameButton="Adicionar" />
-            )}
-          </div>
-          <div className="flex flex-col gap-1 w-[448px] lg:h-full lg:w-full">
-            <div className="flex w-full gap-1 px-0.5 lg:hidden">
-              <select
-                className="input"
-                value={month}
-                onChange={(e) => setMonth(e.target.value)}
-              >
-                <option value="">Nenhum</option>
-                <option value="01">Janeiro</option>
-                <option value="02">Fevereiro</option>
-                <option value="03">Março</option>
-                <option value="04">Abril</option>
-                <option value="05">Maio</option>
-                <option value="06">Junho</option>
-                <option value="07">Julho</option>
-                <option value="08">Agosto</option>
-                <option value="09">Setembro</option>
-                <option value="10">Outubro</option>
-                <option value="11">Novembro</option>
-                <option value="12">Dezembro</option>
-              </select>
-              <select
-                className="input"
-                value={year}
-                onChange={(e) => setYear(e.target.value)}
-              >
-                <option value="2023">2023</option>
-              </select>
-            </div>
-            <div className="flex justify-between px-4  items-center w-full h-1/3 bg-gray-800/40 shadow-md shadow-gray-900/20 rounded-tr-lg lg:rounded-none">
-              <h1>Rec:</h1>
-              <h1>R$ {numberToString(totalEntradas)}</h1>
-            </div>
-
-            <div className="flex justify-between px-4 items-center w-full h-1/3 shadow-md">
-              <h1>Des:</h1>
-              <h1>R$ {numberToString(totalSaidas)}</h1>
-            </div>
-            <div className="flex justify-between px-4 items-center w-full h-1/3 bg-gray-800/40 shadow-md shadow-gray-900/20 lg:rounded-br-lg">
-              <h1>Sal:</h1>
-              <h1>R$ {numberToString(totalEntradas - totalSaidas)}</h1>
             </div>
           </div>
         </div>
+        <Modal
+          title="MODAL"
+          isOpen={addModalIsOpen}
+          onClose={() => setAddModalIsOpen(false)}
+        >
+          <FinanceForm formSubmit={handleSubmit} nameButton="Adicionar" />
+        </Modal>
+        <Modal
+          title="MODAL"
+          isOpen={updateModalIsOpen}
+          onClose={() => setUpdateModalIsOpen(false)}
+        >
+          <FinanceForm
+            formSubmit={handleUpdate}
+            data={finance ? finance : {}}
+            nameButton="Editar"
+          />
+        </Modal>
       </div>
     );
   }

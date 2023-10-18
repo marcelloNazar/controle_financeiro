@@ -1,9 +1,8 @@
-import Header from "@/components/Header";
+import Header from "@/components/partials/Header";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { AuthProvider } from "@/providers/AuthProvider";
-import { FinanceProvider } from "@/providers/FinanceProvider";
+import { Providers } from "@/providers/Providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,16 +18,18 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <AuthProvider>
-        <FinanceProvider>
-          <body
-            className={`inter.className overflow-hidden max-w-6xl px-2 h-screen mx-auto flex flex-col bg-gray-950 text-gray-400 `}
-          >
+      <Providers>
+        <body
+          className={`inter.className overflow-hidden max-w-6xl px-2 h-screen mx-auto flex flex-col bg-gray-950 text-gray-400 `}
+        >
+          <header>
             <Header />
+          </header>
+          <main className="flex flex-1 justify-center items-center">
             {children}
-          </body>
-        </FinanceProvider>
-      </AuthProvider>
+          </main>
+        </body>
+      </Providers>
     </html>
   );
 }

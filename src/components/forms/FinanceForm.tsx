@@ -3,12 +3,17 @@ import { useState, useEffect } from "react";
 import { IFinance } from "@/interfaces/Post";
 import { FinanceResolver } from "@/utils/validators";
 import { useForm } from "react-hook-form";
-import Input from "../Input";
-
-import ToggleSwitch from "../ToggleSwitch";
+import Input from "../partials/Input";
+import ToggleSwitch from "../partials/ToggleSwitch";
 import { useFinance } from "@/providers/FinanceProvider";
-import Spinner from "../Spinner";
-import { BsGraphDownArrow, BsGraphUpArrow } from "react-icons/bs";
+import Select from "../partials/Select";
+import { salariosOptions, gastosOptions } from "@/utils/category";
+import {
+  numberToString,
+  letrasMaiusculas,
+  formatarDataParaString,
+} from "@/utils/format";
+import Button from "../partials/Button";
 
 type FinanceFormProps = {
   data?: Partial<IFinance>;
@@ -16,23 +21,12 @@ type FinanceFormProps = {
   nameButton: string;
 };
 
-//Formulario para cadastro de animais
 const FinanceForm: React.FC<FinanceFormProps> = ({
   data = {},
   formSubmit,
   nameButton,
 }) => {
   const { finance, setFinance, loading, setLoading } = useFinance();
-
-  function numberToString(number?: number) {
-    const string = number?.toLocaleString("pt-BR", {
-      minimumFractionDigits: 2,
-    });
-    return string;
-  }
-  function letrasMaiusculas(str: string) {
-    return str.toUpperCase();
-  }
 
   const formMethods = useForm<IFinance>({ resolver: FinanceResolver as any });
   const {
@@ -112,17 +106,8 @@ const FinanceForm: React.FC<FinanceFormProps> = ({
     handleRemoveData();
   };
 
-  function formatarDataParaString(data: Date): string {
-    const ano = String(data.getFullYear());
-    const mes = String(data.getMonth() + 1).padStart(2, "0"); // Lembre-se de que os meses são base 0
-    const dia = String(data.getDate()).padStart(2, "0");
-
-    return `${ano}-${mes}-${dia}`;
-  }
-
   const handleValorChange = (inputValor: string) => {
     const decimalPart = inputValor.split(",")[1];
-
     if (
       inputValor === "" ||
       (!isNaN(Number(inputValor.replace(",", "."))) &&
@@ -133,10 +118,10 @@ const FinanceForm: React.FC<FinanceFormProps> = ({
   };
 
   return (
-    <div className="flex w-full">
+    <div className="flex w-full px-2">
       <form
         onSubmit={handleSubmit(submitForm)}
-        className="flex w-full flex-col gap-1"
+        className="flex w-full flex-col gap-2"
       >
         <Input
           type="text"
@@ -144,52 +129,32 @@ const FinanceForm: React.FC<FinanceFormProps> = ({
           placeholder="Titulo"
           error={errors?.title?.message}
         />
-        <div className="flex w-full flex-row lg:flex-col gap-1 justify-center items-center">
-          <Input
-            type="text"
-            {...register("value")}
-            placeholder="Valor"
-            value={valor}
-            onChange={(e) => handleValorChange(e.target.value)}
-            error={errors?.value?.message}
-          />
 
-          <ToggleSwitch register={register} tipo={tipo} />
-        </div>
-        <div className="flex w-full flex-row lg:flex-col justify-center gap-1 items-center">
-          <div className="w-full px-1">
-            <select className="input" {...register("category")}>
-              <option value="" className="dark:text-gray-600">
-                Categoria
-              </option>
-              {tipo ? (
-                <>
-                  <option value="Salario">Salario</option>
-                  <option value="Freelancer">Freelancer</option>
-                </>
-              ) : (
-                <>
-                  {" "}
-                  <option value="Alimentação">Alimentação</option>
-                  <option value="Gasolina">Gasolina</option>
-                </>
-              )}
-            </select>
-            {errors?.category?.message && (
-              <p className="text-xs text-red-600">
-                {errors?.category?.message}
-              </p>
-            )}
-          </div>
-          <Input type="date" {...register("date")} />
-        </div>
-        <button
+        <Input
+          type="text"
+          {...register("value")}
+          placeholder="Valor"
+          value={valor}
+          onChange={(e) => handleValorChange(e.target.value)}
+          error={errors?.value?.message}
+        />
+
+        <ToggleSwitch register={register} tipo={tipo} />
+
+        <Select
+          placeholder="Categoria"
+          register={register("category")}
+          options={tipo ? salariosOptions : gastosOptions}
+          error={errors?.category?.message}
+        />
+
+        <Input type="date" {...register("date")} />
+
+        <Button
           onClick={handleSubmit(submitForm)}
-          type="submit"
-          className="btn w-full"
-        >
-          {loading ? <Spinner /> : nameButton}
-        </button>
+          text={nameButton}
+          isLoading={loading}
+        />
       </form>
     </div>
   );

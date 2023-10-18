@@ -1,8 +1,7 @@
 "use client";
-import { getProviders, signIn, useSession } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
-import Spinner from "@/components/Spinner";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import Spinner from "@/components/partials/Spinner";
 
 const Login = ({ url }: any) => {
   const session = useSession();

@@ -22,8 +22,8 @@ export default function Header() {
   const imageUrl = session.data?.user?.image;
 
   return (
-    <div className="flex  w-full py-2 justify-between items-center">
-      <>Controle Finaceiro</>
+    <div className="flex  w-full py-2 justify-between items-center ">
+      <h1>Controle Finaceiro</h1>
       <div className="flex items-center gap-4 ">
         {links.map((link) => (
           <Link key={link.id} href={link.url} className="">
@@ -33,29 +33,29 @@ export default function Header() {
         {session.status === "authenticated" && (
           <div className="flex flex-col items-center">
             <button
-              className="flex items-center rounded-full border-2 border-transparent active:border-gray-200 duration-200 hover:text-gray-200"
+              className="flex items-center rounded-full border border-transparent focus:shadow-[0_0_7px_indigo] hover:shadow-[0_0_4px_indigo] duration-200 hover:text-gray-200 hover:scale-110 "
               onClick={() => setIsOpen(!isOpen)}
             >
               <Image
                 className="rounded-full"
                 src={imageUrl!}
                 alt="Descrição da imagem"
-                width={36} // Largura da imagem em pixels
-                height={36} // Altura da imagem em pixels
+                width={36} 
+                height={36} 
               />
-              {!isOpen ? <AiOutlineCaretDown /> : <AiOutlineCaretUp />}
+              {!isOpen ? <AiOutlineCaretDown /> : <AiOutlineCaretUp  />}
             </button>
             {isOpen && (
               <div className="flex absolute justify-end mr-20 mt-12">
-                <div className="flex flex-col w-32 h-52 rounded-lg p-2 border bg-gray-50 dark:bg-gray-950">
+                <div className="flex flex-col w-32 h-52 rounded-lg p-2 shadow-[0_0_4px_indigo] bg-gray-950">
                   <div className="flex flex-col justify-center h-full gap-4 border-b mb-2">
                     <div className="flex justify-center">
                       <Image
                         className="rounded-full"
                         src={imageUrl!}
                         alt="Descrição da imagem"
-                        width={70} // Largura da imagem em pixels
-                        height={70} // Altura da imagem em pixels
+                        width={70} 
+                        height={70} 
                       />
                     </div>
                     <div className="flex justify-center">Olá, {firstName}!</div>
